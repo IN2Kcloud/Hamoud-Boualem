@@ -1,3 +1,10 @@
+window.addEventListener('load', () => {
+  document.body.classList.remove('before-load');
+});
+document.querySelector('.loading').addEventListener('transitionend', (e) => {
+  document.body.removeChild(e.currentTarget);
+});
+
 const cursor = document.querySelector(".cursor");
 const cursorImg = document.querySelector(".cursor-img");
 const teamCopy1 = document.querySelector(".team-copy1");
@@ -23,11 +30,11 @@ document.addEventListener("mousemove", (e) => {
 
 // Handle hover events to change the cursor image
 teamCopy1.addEventListener("mouseenter", () => {
-  changeCursorImage('./assets/new-cursor.png');
+  changeCursorImage('./assets/new-cursor.webp');
 });
 
 teamCopy1.addEventListener("mouseleave", () => {
-  changeCursorImage('./assets/cursor.png');
+  changeCursorImage('./assets/cursor.webp');
 });
 
 
@@ -49,7 +56,7 @@ document.addEventListener("click", function (event) {
   } else {
     const imgNumber = Math.floor(Math.random() * 6) + 1;
     container.innerHTML = `<div class="img-container">
-                                 <img src="./assets/img-${imgNumber}.jpg" alt="" />
+                                 <img src="./assets/img-${imgNumber}.webp" alt="" />
                                </div>`;
   }
 
