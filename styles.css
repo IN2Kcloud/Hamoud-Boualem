@@ -104,6 +104,13 @@ img {
 
 @media screen and (min-device-height: 720px) and (max-device-width: 1440px){ .team-copy1-wrap{font-size:10rem;} }
 
+@media screen and (max-device-width: 500px) {
+  .cursor { width: 100px; height: 100px; }
+  .video-container, .img-container { width: 400px; height: 300px; }
+  .team-copy1-wrap{font-size:7rem;}
+  .team-copy1-wrap{animation:subLoop1 30s linear infinite;}
+}
+
 /* CSS from other files */
 .loading{display:flex;align-items:center;justify-content:center;position:fixed;top:0;right:0;bottom:0;left:0;z-index:100;background:#ffd100;opacity:0;transition:0.5s;}
 .before-load .loading{opacity:1;}
