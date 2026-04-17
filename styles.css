@@ -1,8 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* {box-sizing: border-box; padding: 0; margin: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;}
 
 @font-face{font-family:'Narnia';src:url('assets/Narnia.otf') format('opentype');font-display:swap;}
 
@@ -15,7 +11,7 @@ body {
   overflow: hidden;
   z-index: -1;
 }
-
+/*
 body::before {
   content: '';
   position: absolute;
@@ -24,9 +20,11 @@ body::before {
   width: 100%;
   height: 100%;
   background: url('https://www.transparenttextures.com/patterns/noise.png');
-  opacity: 0.2; /* Adjust opacity to control noise visibility */
+  opacity: 0.2;
   z-index: 1;
 }
+*/
+#grid-bg { position: fixed;top: 0;left: 0;width: 100%;height: 100vh; /*inset: 0;*/ z-index: 0; pointer-events: none; }
 
 
 .wrapper {
@@ -35,7 +33,7 @@ body::before {
   height: fit-content;
   z-index: 0;
   z-index: 2;
-  mix-blend-mode: difference;
+  /*mix-blend-mode: difference;*/
 }
 
 nav {
@@ -58,13 +56,6 @@ nav {
 @keyframes fade {0% {opacity: 1;}100% {opacity: 0;}}
 .fade-in-out {animation: fade 1s ease-in-out infinite alternate;}.fade-in-out:hover {animation-duration: 0.2s;}  
 
-video,
-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .video-container,
 .img-container {
   position: absolute;
@@ -74,17 +65,25 @@ img {
   pointer-events: none;
 }
 
+video,
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .cursor {
   position: absolute;
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   background: #f1f1f1;
   border-radius: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 50px;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .cursor-img {
@@ -96,11 +95,11 @@ img {
   opacity: 0;
 }
 
-.team-copy1{position: absolute; bottom: 2%; display:flex; align-items: center; white-space:nowrap; overflow:hidden; z-index: 1; mix-blend-mode:color-dodge;} 
-.team-copy1-wrap{font-family: 'Narnia'; font-size:10rem;display: flex; align-items: center; letter-spacing:2px; line-height:10rem;padding-right:0.3em;margin:-0.3rem 0;}
+.team-copy1{position: absolute; bottom: 2%; display:flex; align-items: center; white-space:nowrap; overflow:hidden; z-index: 1; /*mix-blend-mode:color-dodge;*/} 
+.team-copy1-wrap{font-family: 'Narnia'; font-size:7rem;display: flex; align-items: center; letter-spacing:30px; line-height:1;padding-right:0.3em;margin:-0.3rem 0;}
 .team-copy1-wrap{animation:subLoop1 15s linear infinite;}
 @keyframes subLoop1{from{transform: translateX(0);}to{transform: translateX(-100%);}}
-.t-stroke-black{font-size: 20rem; line-height:22rem; color: #f1f1f1; letter-spacing: 4px; text-transform: uppercase;} 
+.t-stroke-black{font-size: 20rem; line-height:1; color: #f1f1f1; letter-spacing: 20px; text-transform: uppercase;} 
 
 @media screen and (min-device-height: 720px) and (max-device-width: 1440px){ .team-copy1-wrap{font-size:10rem;} }
 

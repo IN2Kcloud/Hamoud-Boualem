@@ -107,3 +107,74 @@ document.addEventListener("click", function (event) {
     "-=0.5"
   );
 });
+
+// BG points -----------------------------------------------------------------
+const gridCanvas = document.getElementById("grid-bg");
+const ctx = gridCanvas.getContext("2d");
+
+// --- 1. Create a hidden noise buffer ---
+const noiseCanvas = document.createElement('canvas');
+const noiseCtx = noiseCanvas.getContext('2d');
+noiseCanvas.width = 100;
+noiseCanvas.height = 100;
+
+function createNoise() {
+    const imageData = noiseCtx.createImageData(100, 100);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const val = Math.random() * 255;
+        data[i] = data[i+1] = data[i+2] = val; // RGB
+        data[i+3] = 25; // Opacity of the grain (keep it low!)
+    }
+    noiseCtx.putImageData(imageData, 0, 0);
+}
+createNoise();
+
+let time = 0;
+
+function resize() {
+    gridCanvas.width = window.innerWidth;
+    gridCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+function draw() {
+    time += 0.005;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+    // 2. Draw the Gradient
+    const centerX = gridCanvas.width / 2 + Math.cos(time) * (gridCanvas.width * 0.3);
+    const centerY = gridCanvas.height / 2 + Math.sin(time * 0.8) * (gridCanvas.height * 0.2);
+    const baseRadius = Math.max(gridCanvas.width, gridCanvas.height) * 0.7;
+    const pulseRadius = baseRadius + Math.sin(time * 0.5) * 100;
+
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
+    gradient.addColorStop(0, "#FFD100"); 
+    gradient.addColorStop(1, "#000");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+    // 3. Layer the Noise on top
+    // We use 'source-over' or 'overlay' to blend the grain
+    ctx.globalCompositeOperation = "source-over"; 
+    
+    // To animate the noise, we draw the small noise tile at random offsets
+    const noiseOffsetX = Math.random() * noiseCanvas.width;
+    const noiseOffsetY = Math.random() * noiseCanvas.height;
+
+    // Create a pattern from the noise tile
+    const pattern = ctx.createPattern(noiseCanvas, 'repeat');
+    ctx.save();
+    ctx.translate(noiseOffsetX, noiseOffsetY); // Shifts noise every frame
+    ctx.fillStyle = pattern;
+    ctx.fillRect(-noiseOffsetX, -noiseOffsetY, gridCanvas.width, gridCanvas.height);
+    ctx.restore();
+
+    requestAnimationFrame(draw);
+}
+
+draw();
