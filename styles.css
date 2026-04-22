@@ -268,7 +268,7 @@ img {
 @media screen and (min-device-height: 720px) and (max-device-width: 1440px){ .team-copy1-wrap{font-size:10rem;} }
 
 @media screen and (max-device-width: 1000px) {
-  .t-stroke-black{font-size:15rem;line-height:1.2;}
+  .t-stroke-black{font-size:15rem;line-height:1;}
   .team-copy1-wrap{animation:subLoop1 30s linear infinite;}
 }
 
