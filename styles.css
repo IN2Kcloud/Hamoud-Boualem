@@ -7,46 +7,84 @@ body {
   margin: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #111 0%, #333000 100%);
+  /*background: linear-gradient(135deg, #111 0%, #333000 100%);*/
   position: relative;
   overflow: hidden;
   z-index: -1;
 }
-/*
-body::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+
+#grid-bg { position: fixed;top: 0;left: 0;width: 100%;height: 100vh; /*inset: 0;*/ z-index: 0; pointer-events: none; }
+
+.intro {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.intro-title {
+  /*
+  font-family: 'OPTIMA';
+  font-size: 4rem;
+  letter-spacing: 0px;
+  color: #000;
+  */
+  width: 10%;
+  height: auto;
+  opacity: 0;
+}
+
+.intro-title img{
   width: 100%;
   height: 100%;
-  background: url('https://www.transparenttextures.com/patterns/noise.png');
-  opacity: 0.2;
-  z-index: 1;
+  object-fit: contain;
 }
-*/
-#grid-bg { position: fixed;top: 0;left: 0;width: 100%;height: 100vh; /*inset: 0;*/ z-index: 0; pointer-events: none; }
+@media (max-width: 1000px) {.intro-title{width: 33%;}}
 
 .hb {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10%; height: auto; z-index: 4; /*mix-blend-mode: screen;*/ filter: drop-shadow(0px 0px 2px #fff);}
 @media (max-width: 1000px) {.hb{width: 33%;}}
 
+.hb {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  animation: logoReveal 1.5s cubic-bezier(.19,1,.22,1) forwards/*, hbFloat 6s ease-in-out infinite*/;
+  animation-delay: 4s;
+}
+
+@keyframes logoReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.4);
+    filter: blur(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0px);
+  }
+}
+
 .wrapper {
-  position: absolute; top: 2%; left: 50%; transform: translate(-50%, 0%);
-  width: fit-content;
+  position: absolute; top: 0%; left: 50%; transform: translate(-50%, 0%);
+  width: 50%;
   height: fit-content;
-  z-index: 0;
   z-index: 2;
   /*mix-blend-mode: difference;*/
 }
 
 .wave-trigger {
   font-family: 'Narnia';
-  font-size: 3rem;
+  font-size: 2rem;
   /*letter-spacing: 8px;*/
   color: #fff;
   position: relative;
   overflow: hidden;
   text-align: center;
+  display: flex;flex-direction: column;align-items: center;justify-content: space-evenly;
+  height: 200px;
 }
 
 /* TEXT */
@@ -54,31 +92,82 @@ body::before {
   position: relative;
   display: inline-block;
 
-  /* 🔥 animated gradient flow */
+  /* 🔥 animated gradient flow 
   background: linear-gradient(
-    90deg,
+    45deg,
     #ffffff 0%,
-    #FFD100 25%,
+    #ffffff 24.5%,
+    #000 25%,
+    #000 26%,
+    #ffffff 26.5%,
     #ffffff 50%,
-    #FFD100 75%,
+    #ffffff 74.5%,
+    #000 75%,
+    #000 76%,
+    #ffffff 76.5%,
     #ffffff 100%
   );
+  */
+  font-family: 'OPTIMA', "Narnia", sans-serif;
+  font-weight: bolder;
 
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: white;
 
-  animation: textFlow 4s linear infinite;
+  /*animation: textFlow 4s linear infinite;*/
+  animation: hbChaosStroke 1.8s infinite steps(2, end);
+}
+
+@keyframes hbChaosStroke {
+  0% {
+    filter:
+      drop-shadow(2px -1px 0 rgba(0,0,0,0.9))
+      drop-shadow(-1px 2px 0 rgba(0,0,0,0.8))
+      drop-shadow(3px 1px 6px rgba(0,0,0,0.4));
+    /*transform: translate(-50%, -50%) scale(1);*/
+  }
+
+  25% {
+    filter:
+      drop-shadow(-3px 2px 0 rgba(0,0,0,1))
+      drop-shadow(2px -2px 0 rgba(0,0,0,0.7))
+      drop-shadow(-6px 3px 10px rgba(0,0,0,0.35));
+    /*transform: translate(-49.5%, -50.5%) scale(1.01);*/
+  }
+
+  50% {
+    filter:
+      drop-shadow(4px 3px 0 rgba(0,0,0,0.95))
+      drop-shadow(-2px -3px 0 rgba(0,0,0,0.85))
+      drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+    /*transform: translate(-50.5%, -52%) scale(0.99);*/
+  }
+
+  75% {
+    filter:
+      drop-shadow(-4px -1px 0 rgba(0,0,0,1))
+      drop-shadow(3px 4px 0 rgba(0,0,0,0.8))
+      drop-shadow(6px -6px 15px rgba(0,0,0,0.3));
+    /*transform: translate(-50.2%, -49.8%) scale(1.02);*/
+  }
+
+  100% {
+    filter:
+      drop-shadow(1px 1px 0 rgba(0,0,0,0.9))
+      drop-shadow(-2px 2px 0 rgba(0,0,0,0.8))
+      drop-shadow(2px 10px 25px rgba(0,0,0,0.45));
+    /*transform: translate(-50%, -50%) scale(1);*/
+  }
 }
 
 /* =========================
    INNER FADE RINGS
    ========================= */
 .rings {
-  position: absolute;
-  top: 10%;
-  left: 50%;
+  position: relative;
+  /*top: 10%; left: 50%;*/
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -94,66 +183,23 @@ body::before {
   inset: 0;
   border-radius: 50%;
 
-  border: 1px solid rgba(255, 209, 0, 0.5);
-  filter: blur(0.5px);
+  border: 1px solid #fff;
+  /*filter: blur(0.5px);*/
 
   animation: ringPulse 3s linear infinite;
 }
 
 .rings::after {
   animation-delay: 1.5s;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: #fff;
 }
 
-/* extra expanding layer */
-.rings {
-  box-shadow:
-    0 0 0 0 rgba(255, 209, 0, 0.4),
-    0 0 0 20px rgba(255, 209, 0, 0.15),
-    0 0 0 40px rgba(255, 209, 0, 0.05);
-  animation: corePulse 3s ease-out infinite;
-}
-
-/* 🔥 moving shine sweep 
-.wave-trigger::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 100%;
-  height: 100%;
-
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255,255,255,0.4) 50%,
-    transparent 100%
-  );
-
-  animation: shineMove 3s linear infinite;
-}
-*/
-/* subtle breathing scale 
-.wave-trigger {
-  animation: breathe 4s ease-in-out infinite;
-}
-*/
 /* animations */
 @keyframes textFlow {
   0% { background-position: 0% center; }
   100% { background-position: 200% center; }
 }
-/*
-@keyframes shineMove {
-  0% { left: -150%; }
-  100% { left: 150%; }
-}
 
-@keyframes breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-*/
 @keyframes ringPulse {
   0% {
     transform: scale(0.3);
@@ -259,16 +305,14 @@ img {
 
 @media (max-width: 1000px) {.cursor{display: none;}}
 
-.team-copy1{position: absolute; bottom: 0%; display:flex; align-items: center; white-space:nowrap; overflow:hidden; z-index: 1; /*mix-blend-mode:color-dodge;*/} 
-.team-copy1-wrap{font-family: 'Narnia'; font-size:7rem;display: flex; align-items: center; letter-spacing:30px; line-height:1;padding-right:0.3em;margin:-0.3rem 0;}
+.team-copy1{position: absolute; bottom: 0%; display:flex; align-items: center; white-space:nowrap; overflow:hidden; z-index: 1; /*mix-blend-mode:color-dodge;*/ background-color: #fff;} 
+.team-copy1-wrap{font-family: 'Narnia'; display: flex; align-items: center;}
 .team-copy1-wrap{animation:subLoop1 15s linear infinite;}
 @keyframes subLoop1{from{transform: translateX(0);}to{transform: translateX(-100%);}}
-.t-stroke-black{font-size: 20rem; line-height:1.5; color: #f1f1f1; letter-spacing: 20px; text-transform: uppercase; text-shadow: 0 0 0.05em #fff;} 
-
-@media screen and (min-device-height: 720px) and (max-device-width: 1440px){ .team-copy1-wrap{font-size:10rem;} }
+.t-stroke-black{font-size: 5rem; line-height:1.5; color: #000; letter-spacing: 5px; text-transform: uppercase; /*text-shadow: 0 0 0.05em #fff;*/ /*text-shadow: -5px -3px 0 black, 3px -3px 0 black, -3px  3px 0 black, 3px  3px 0 black;*/} 
 
 @media screen and (max-device-width: 1000px) {
-  .t-stroke-black{font-size:15rem;line-height:1;}
+  .t-stroke-black{font-size:3rem;line-height:1.5;}
   .team-copy1-wrap{animation:subLoop1 30s linear infinite;}
 }
 

@@ -5,6 +5,36 @@ document.querySelector('.loading').addEventListener('transitionend', (e) => {
   document.body.removeChild(e.currentTarget);
 });
 
+gsap.to(".intro-title", {
+  blur: 20,
+  scale: 1.4,
+  opacity: 0,
+  duration: .5,
+  ease: "power2.out"
+});
+
+gsap.to(".intro-title", {
+  scale: 1,
+  opacity: 1,
+  delay: 2,
+  duration: 1,
+  ease: "power2.out"
+});
+
+gsap.to(".intro-title", {
+  scale: 1.4,
+  blur: 20,
+  delay: 3.5,
+  duration: .5
+});
+
+gsap.to(".intro", {
+  opacity: 0,
+  delay: 4,
+  duration: 1,
+  onComplete: () => document.querySelector(".intro").remove()
+});
+
 // ----------------------
 // ELEMENTS
 // ----------------------
@@ -46,6 +76,7 @@ const videoData = [
 // AUDIO (OPTIMIZED)
 // ----------------------
 const clickSound = new Audio("./assets/click-sfx.mp3");
+
 
 // ----------------------
 // CURSOR IMAGE SWITCH
@@ -199,72 +230,100 @@ document.addEventListener("click", function (event) {
 });
 
 // BG points -----------------------------------------------------------------
-const gridCanvas = document.getElementById("grid-bg");
-const ctx = gridCanvas.getContext("2d");
 
-// --- 1. Create a hidden noise buffer ---
-const noiseCanvas = document.createElement('canvas');
-const noiseCtx = noiseCanvas.getContext('2d');
-noiseCanvas.width = 100;
-noiseCanvas.height = 100;
+const canvas = document.getElementById("grid-bg");
+const ctx = canvas.getContext("2d");
 
-function createNoise() {
-    const imageData = noiseCtx.createImageData(100, 100);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-        const val = Math.random() * 255;
-        data[i] = data[i+1] = data[i+2] = val; // RGB
-        data[i+3] = 25; // Opacity of the grain (keep it low!)
-    }
-    noiseCtx.putImageData(imageData, 0, 0);
-}
-createNoise();
+let t = 0;
 
-let time = 0;
-
+// --------------------
+// RESIZE
+// --------------------
 function resize() {
-    gridCanvas.width = window.innerWidth;
-    gridCanvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 window.addEventListener("resize", resize);
 resize();
 
+// --------------------
+// DRAW
+// --------------------
 function draw() {
-    time += 0.005;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+  t += 0.01;
 
-    // 2. Draw the Gradient
-    const centerX = gridCanvas.width / 2 + Math.cos(time) * (gridCanvas.width * 0.3);
-    const centerY = gridCanvas.height / 2 + Math.sin(time * 0.8) * (gridCanvas.height * 0.2);
-    const baseRadius = Math.max(gridCanvas.width, gridCanvas.height) * 0.7;
-    const pulseRadius = baseRadius + Math.sin(time * 0.5) * 100;
+  const w = canvas.width;
+  const h = canvas.height;
 
-    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
-    gradient.addColorStop(0, "#FFD100"); 
-    gradient.addColorStop(1, "#000");
+  // black base
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, w, h);
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+  const centerX = w / 2;
 
-    // 3. Layer the Noise on top
-    // We use 'source-over' or 'overlay' to blend the grain
-    ctx.globalCompositeOperation = "source-over"; 
-    
-    // To animate the noise, we draw the small noise tile at random offsets
-    const noiseOffsetX = Math.random() * noiseCanvas.width;
-    const noiseOffsetY = Math.random() * noiseCanvas.height;
+  const wave1 = Math.sin(t * 1.2) * 40;
+  const wave2 = Math.sin(t * 0.7 + 2) * 60;
+  const wave3 = Math.sin(t * 1.8 + 4) * 30;
 
-    // Create a pattern from the noise tile
-    const pattern = ctx.createPattern(noiseCanvas, 'repeat');
-    ctx.save();
-    ctx.translate(noiseOffsetX, noiseOffsetY); // Shifts noise every frame
-    ctx.fillStyle = pattern;
-    ctx.fillRect(-noiseOffsetX, -noiseOffsetY, gridCanvas.width, gridCanvas.height);
-    ctx.restore();
+  // yellow core
+  ctx.fillStyle = "#FFD100";
 
-    requestAnimationFrame(draw);
+  const baseWidth = w * 0.8;
+
+  const leftEdge =
+    centerX -
+    baseWidth / 2 +
+    Math.sin(t * 1.1) * 20 +
+    wave3;
+
+  const rightEdge =
+    centerX +
+    baseWidth / 2 +
+    Math.cos(t * 1.3) * 20 -
+    wave3;
+
+  ctx.beginPath();
+
+  // --------------------
+  // DOWNWARD FLOW FIX
+  // --------------------
+  const flowSpeed = t * 120; // 🔥 THIS creates downward motion
+
+  // left side (flowing down)
+  ctx.moveTo(leftEdge, 0);
+
+  for (let y = 0; y <= h; y += 20) {
+    const wobble =
+      Math.sin(y * 0.01 + t * 2 + flowSpeed * 0.01) * 25 +
+      Math.sin(y * 0.02 + t * 1.5 + flowSpeed * 0.02) * 12;
+
+    const x = leftEdge + wobble;
+    ctx.lineTo(x, y);
+  }
+
+  // right side (return path)
+  for (let y = h; y >= 0; y -= 20) {
+    const wobble =
+      Math.sin(y * 0.01 + t * 2 + flowSpeed * 0.01 + 3) * 25 +
+      Math.sin(y * 0.02 + t * 1.5 + flowSpeed * 0.02 + 2) * 12;
+
+    const x = rightEdge + wobble;
+    ctx.lineTo(x, y);
+  }
+
+  ctx.closePath();
+  ctx.fill();
+
+  // --------------------
+  // BLACK EDGE WALLS
+  // --------------------
+  const edge = 80;
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, edge, h);
+  ctx.fillRect(w - edge, 0, edge, h);
+
+  requestAnimationFrame(draw);
 }
 
 draw();
