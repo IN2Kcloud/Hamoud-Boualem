@@ -247,81 +247,111 @@ window.addEventListener("resize", resize);
 resize();
 
 // --------------------
+// CORE SETTINGS
+// --------------------
+const BLACK = "#000";
+const YELLOW = "#FFD100";
+
+// --------------------
 // DRAW
 // --------------------
 function draw() {
-  t += 0.01;
+  t += 0.008;
 
   const w = canvas.width;
   const h = canvas.height;
 
-  // black base
-  ctx.fillStyle = "#000";
+  // background
+  ctx.fillStyle = BLACK;
   ctx.fillRect(0, 0, w, h);
 
   const centerX = w / 2;
 
-  const wave1 = Math.sin(t * 1.2) * 40;
-  const wave2 = Math.sin(t * 0.7 + 2) * 60;
-  const wave3 = Math.sin(t * 1.8 + 4) * 30;
+  // 🔥 gravity pulse (this drives everything)
+  const gravity = t * 160;
 
-  // yellow core
-  ctx.fillStyle = "#FFD100";
+  // subtle breathing width (organic pressure)
+  const pressure = Math.sin(t * 0.6) * 40;
 
-  const baseWidth = w * 0.8;
+  const baseWidth = w * 0.65 + pressure;
 
-  const leftEdge =
-    centerX -
-    baseWidth / 2 +
-    Math.sin(t * 1.1) * 20 +
-    wave3;
+  const leftBase = centerX - baseWidth / 2;
+  const rightBase = centerX + baseWidth / 2;
 
-  const rightEdge =
-    centerX +
-    baseWidth / 2 +
-    Math.cos(t * 1.3) * 20 -
-    wave3;
-
+  ctx.fillStyle = YELLOW;
   ctx.beginPath();
 
   // --------------------
-  // DOWNWARD FLOW FIX
+  // LEFT EDGE (flowing down)
   // --------------------
-  const flowSpeed = t * 120; // 🔥 THIS creates downward motion
+  ctx.moveTo(leftBase, 0);
 
-  // left side (flowing down)
-  ctx.moveTo(leftEdge, 0);
+  for (let y = 0; y <= h; y += 12) {
+    const flow =
+      Math.sin(y * 0.015 + gravity * 0.02) * 25 +
+      Math.sin(y * 0.03 + gravity * 0.01) * 10;
 
-  for (let y = 0; y <= h; y += 20) {
-    const wobble =
-      Math.sin(y * 0.01 + t * 2 + flowSpeed * 0.01) * 25 +
-      Math.sin(y * 0.02 + t * 1.5 + flowSpeed * 0.02) * 12;
+    const pinch = Math.sin(t + y * 0.005) * 15;
 
-    const x = leftEdge + wobble;
-    ctx.lineTo(x, y);
+    ctx.lineTo(leftBase + flow + pinch, y);
   }
 
-  // right side (return path)
-  for (let y = h; y >= 0; y -= 20) {
-    const wobble =
-      Math.sin(y * 0.01 + t * 2 + flowSpeed * 0.01 + 3) * 25 +
-      Math.sin(y * 0.02 + t * 1.5 + flowSpeed * 0.02 + 2) * 12;
+  // --------------------
+  // RIGHT EDGE (mirrored chaos)
+  // --------------------
+  for (let y = h; y >= 0; y -= 12) {
+    const flow =
+      Math.sin(y * 0.015 + gravity * 0.02 + 3) * 25 +
+      Math.sin(y * 0.03 + gravity * 0.01 + 2) * 10;
 
-    const x = rightEdge + wobble;
-    ctx.lineTo(x, y);
+    const pinch = Math.cos(t + y * 0.005) * 15;
+
+    ctx.lineTo(rightBase + flow + pinch, y);
   }
 
   ctx.closePath();
   ctx.fill();
 
   // --------------------
-  // BLACK EDGE WALLS
+  // EDGE CONFINEMENT (black “walls” feel alive now)
   // --------------------
-  const edge = 80;
+  const edgeW = 90 + Math.sin(t * 1.2) * 10;
 
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, edge, h);
-  ctx.fillRect(w - edge, 0, edge, h);
+  ctx.fillStyle = BLACK;
+
+  // left wall
+  ctx.fillRect(
+    0,
+    0,
+    edgeW + Math.sin(t * 1.5) * 5,
+    h
+  );
+
+  // right wall
+  ctx.fillRect(
+    w - edgeW - Math.cos(t * 1.3) * 5,
+    0,
+    edgeW,
+    h
+  );
+
+  // --------------------
+  // SUBTLE INTERNAL “ENERGY STRAND”
+  // --------------------
+  ctx.globalAlpha = 0.15;
+  ctx.strokeStyle = YELLOW;
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  for (let y = 0; y <= h; y += 20) {
+    const x =
+      centerX +
+      Math.sin(y * 0.02 + t * 3) * 40;
+
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
 
   requestAnimationFrame(draw);
 }
