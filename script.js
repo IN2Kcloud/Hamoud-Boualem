@@ -320,7 +320,8 @@ function draw() {
       const dx = px + wave * 3 + mx * (y / rows);
       const dy = py + wave * 3 + my * (x / cols);
 
-      const size = 1.2 + wave * 0.3;
+      //const size = 1.2 + wave * 0.3;
+      const size = (1.2 + wave * 0.3) * Math.min(window.innerWidth / 1440, 1);
 
       ctx.beginPath();
       ctx.arc(dx, dy, size, 0, Math.PI * 2);
