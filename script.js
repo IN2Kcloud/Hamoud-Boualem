@@ -1,38 +1,80 @@
-window.addEventListener('load', () => {
-  document.body.classList.remove('before-load');
-});
-document.querySelector('.loading').addEventListener('transitionend', (e) => {
-  document.body.removeChild(e.currentTarget);
-});
+window.addEventListener("load", () => {
+  const tl = gsap.timeline();
 
-gsap.to(".intro-title", {
-  blur: 20,
-  scale: 1.4,
-  opacity: 0,
-  duration: .5,
-  ease: "power2.out"
-});
+  tl
+    // --------------------
+    // LOADER OUT (FAST + PUNCHY)
+    // --------------------
+    .to(".loading", {
+      scale: 1.2,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power3.inOut",
+      onComplete: () => document.querySelector(".loading").remove()
+    })
 
-gsap.to(".intro-title", {
-  scale: 1,
-  opacity: 1,
-  delay: 2,
-  duration: 1,
-  ease: "power2.out"
-});
+    // --------------------
+    // INTRO LOGO ENTER (FROM NOTHING)
+    // --------------------
+    .fromTo(".intro-title",
+      {
+        scale: 1.6,
+        opacity: 0,
+        filter: "blur(30px)"
+      },
+      {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 1.2,
+        ease: "power4.out"
+      }
+    )
 
-gsap.to(".intro-title", {
-  scale: 1.4,
-  blur: 20,
-  delay: 3.5,
-  duration: .5
-});
+    // --------------------
+    // HOLD (let it breathe)
+    // --------------------
+    .to({}, { duration: 0.6 })
 
-gsap.to(".intro", {
-  opacity: 0,
-  delay: 4,
-  duration: 1,
-  onComplete: () => document.querySelector(".intro").remove()
+    // --------------------
+    // INTRO COLLAPSE (cinematic exit)
+    // --------------------
+    .to(".intro-title", {
+      scale: 0.9,
+      opacity: 0,
+      filter: "blur(20px)",
+      duration: 0.6,
+      ease: "power2.in"
+    })
+
+    // --------------------
+    // WHITE SCREEN LIFT (reveal world)
+    // --------------------
+    .to(".intro", {
+      y: "-100%",
+      duration: 1,
+      ease: "power4.inOut",
+      onComplete: () => document.querySelector(".intro").remove()
+    }, "-=0.3")
+
+    // --------------------
+    // MAIN LOGO REVEAL (connected timing)
+    // --------------------
+    .fromTo(".hb",
+      {
+        opacity: 0,
+        scale: 1.3,
+        filter: "blur(20px)"
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 1.2,
+        ease: "power4.out"
+      },
+      "-=0.8"
+    );
 });
 
 // ----------------------
@@ -231,6 +273,70 @@ document.addEventListener("click", function (event) {
 
 // BG points -----------------------------------------------------------------
 
+const gridCanvas = document.getElementById("grid-bg");
+const ctx = gridCanvas.getContext("2d");
+
+let mouse = { x: 0.5, y: 0.5 };
+let time = 0;
+
+function resize() {
+  gridCanvas.width = window.innerWidth;
+  gridCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+window.addEventListener("mousemove", (e) => {
+  mouse.x = e.clientX / window.innerWidth;
+  mouse.y = e.clientY / window.innerHeight;
+});
+
+function draw() {
+  time += 0.01;
+
+  ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+  ctx.fillStyle = "#FFD100";
+  ctx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+  const spacing = 32;
+  const rows = Math.ceil(gridCanvas.height / spacing);
+  const cols = Math.ceil(gridCanvas.width / spacing);
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+
+      const px = x * spacing;
+      const py = y * spacing;
+
+      // wave motion
+      const wave =
+        Math.sin(x * 0.3 + time) +
+        Math.cos(y * 0.3 + time);
+
+      // mouse pull
+      const mx = (mouse.x - 0.5) * 40;
+      const my = (mouse.y - 0.5) * 40;
+
+      const dx = px + wave * 3 + mx * (y / rows);
+      const dy = py + wave * 3 + my * (x / cols);
+
+      const size = 1.2 + wave * 0.3;
+
+      ctx.beginPath();
+      ctx.arc(dx, dy, size, 0, Math.PI * 2);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+/*
+// BG points -----------------------------------------------------------------
+
 const canvas = document.getElementById("grid-bg");
 const ctx = canvas.getContext("2d");
 
@@ -288,8 +394,8 @@ function draw() {
 
   for (let y = 0; y <= h; y += 12) {
     const flow =
-      Math.sin(y * 0.015 + gravity * 0.02) * 25 +
-      Math.sin(y * 0.03 + gravity * 0.01) * 10;
+      Math.sin(y * 0.015 - gravity * 0.02) * 25 +
+      Math.sin(y * 0.03 - gravity * 0.01) * 10;
 
     const pinch = Math.sin(t + y * 0.005) * 15;
 
@@ -301,8 +407,8 @@ function draw() {
   // --------------------
   for (let y = h; y >= 0; y -= 12) {
     const flow =
-      Math.sin(y * 0.015 + gravity * 0.02 + 3) * 25 +
-      Math.sin(y * 0.03 + gravity * 0.01 + 2) * 10;
+      Math.sin(y * 0.015 - gravity * 0.02 + 3) * 25 +
+      Math.sin(y * 0.03 - gravity * 0.01 + 2) * 10;
 
     const pinch = Math.cos(t + y * 0.005) * 15;
 
@@ -357,3 +463,4 @@ function draw() {
 }
 
 draw();
+*/
